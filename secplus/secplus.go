@@ -93,31 +93,6 @@ func B(input string) []byte {
 	return result
 }
 
-// EncodeV2ToBitstream encodes a Security+20 fixed and rolling code into a
-// single bitstream, ready for transmission.
-func EncodeV2ToBitstream(fixedHigh uint8, fixedLow uint64, rolling uint32, burstGapSize int, repeatGapSize int, repeats int) ([]byte, error) {
-	bursts, err := EncodeV2ToBursts(fixedHigh, fixedLow, rolling)
-	if err != nil {
-		return nil, err
-	}
-
-	var result []byte
-
-	burstGap := make([]byte, burstGapSize)
-	repeatGap := make([]byte, repeatGapSize)
-	for i := 0; i < repeats; i++ {
-		if i > 0 {
-			result = append(result, repeatGap...)
-		}
-
-		result = append(result, bursts[0]...)
-		result = append(result, burstGap...)
-		result = append(result, bursts[1]...)
-	}
-
-	return result, nil
-}
-
 // EnvodeV2ToBursts encodes a Security+2.0 fixed and rolling code into two
 // bitstreams, one for each half. The bitstreams have a standard prefix, and are
 // then Manchester coded.
