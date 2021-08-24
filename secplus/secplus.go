@@ -1,6 +1,10 @@
 package secplus
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/zellyn/openers/bits"
+)
 
 // orders is a map of order indicators to orders.
 var orders = map[[4]byte][3]int{
@@ -73,26 +77,6 @@ func ManchesterDecode(input []byte) ([]byte, error) {
 	return result, nil
 }
 
-// S converts from a byte slice of 0s and 1s to string of ASCII 0s and 1s. It
-// does no validation, since it uses only the low bit.
-func S(input []byte) string {
-	result := make([]byte, len(input))
-	for i, b := range input {
-		result[i] = (b & 1) + '0'
-	}
-	return string(result)
-}
-
-// B converts from a string of ASCII 0s and 1s to a byte slice of 0s and 1s. It
-// does no validation, since it only uses the low bit.
-func B(input string) []byte {
-	result := make([]byte, len(input))
-	for i, b := range input {
-		result[i] = byte((b & 1))
-	}
-	return result
-}
-
 // EnvodeV2ToBursts encodes a Security+2.0 fixed and rolling code into two
 // bitstreams, one for each half. The bitstreams have a standard prefix, and are
 // then Manchester coded.
@@ -104,11 +88,11 @@ func EncodeV2ToBursts(fixedHigh uint8, fixedLow uint64, rolling uint32) ([2][]by
 
 	var result [2][]byte
 
-	for i, bits := range packets {
-		bitsWithHeader := make([]byte, len(syncHeader)+2+len(bits))
+	for i, databits := range packets {
+		bitsWithHeader := make([]byte, len(syncHeader)+2+len(databits))
 		copy(bitsWithHeader, syncHeader)
 		bitsWithHeader[len(syncHeader)+1] = byte(i)
-		copy(bitsWithHeader[len(syncHeader)+2:], bits)
+		copy(bitsWithHeader[len(syncHeader)+2:], databits)
 		result[i], err = ManchesterEncode(bitsWithHeader)
 		if err != nil {
 			return [2][]byte{}, err
@@ -189,16 +173,16 @@ func encodeHalfV2(fixed []byte, rolling []byte, long bool) ([]byte, error) {
 // returns 36-bit halves.
 func getFixedHalves(fixedHigh uint8, fixedLow uint64) ([2][]byte, bool) {
 	long := false
-	bits := fmt.Sprintf("%064b", fixedLow)
+	base2 := fmt.Sprintf("%064b", fixedLow)
 	if fixedHigh > 0 || fixedLow >= 1<<40 {
 		long = true
-		bits = fmt.Sprintf("%08b", fixedHigh) + bits
+		base2 = fmt.Sprintf("%08b", fixedHigh) + base2
 	}
 
 	if long {
-		return [2][]byte{B(bits[0:36]), B(bits[36:72])}, long
+		return [2][]byte{bits.B(base2[0:36]), bits.B(base2[36:72])}, long
 	}
-	return [2][]byte{B(bits[24:44]), B(bits[44:64])}, long
+	return [2][]byte{bits.B(base2[24:44]), bits.B(base2[44:64])}, long
 }
 
 // getRollingTernaryHalves converts the rolling code into a binary-pair-coded

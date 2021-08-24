@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/zellyn/openers/bits"
 	"github.com/zellyn/openers/secplus"
 )
 
@@ -28,12 +29,12 @@ func TestManchesterEncode(t *testing.T) {
 
 	for i, tt := range testcases {
 		t.Run(fmt.Sprintf("%d-%s", i, tt.name), func(t *testing.T) {
-			got, err := secplus.ManchesterEncode(secplus.B(tt.input))
+			got, err := secplus.ManchesterEncode(bits.B(tt.input))
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			if !bytes.Equal(got, secplus.B(tt.want)) {
+			if !bytes.Equal(got, bits.B(tt.want)) {
 				t.Errorf("want ManchesterEncode(%v)==%v; got %v", tt.input, tt.want, got)
 			}
 		})
@@ -60,12 +61,12 @@ func TestManchesterDecode(t *testing.T) {
 
 	for i, tt := range testcases {
 		t.Run(fmt.Sprintf("%d-%s", i, tt.name), func(t *testing.T) {
-			got, err := secplus.ManchesterDecode(secplus.B(tt.input))
+			got, err := secplus.ManchesterDecode(bits.B(tt.input))
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			if !bytes.Equal(got, secplus.B(tt.want)) {
+			if !bytes.Equal(got, bits.B(tt.want)) {
 				t.Errorf("want ManchesterDecode(%v)==%v; got %v", tt.input, tt.want, got)
 			}
 		})
@@ -255,11 +256,11 @@ func TestEncodeV2(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			if !bytes.Equal(got[0], secplus.B(tt.want[0])) {
-				t.Errorf("want EncodeV2(%d, %d, %d)[0]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.want[0], secplus.S(got[0]))
+			if !bytes.Equal(got[0], bits.B(tt.want[0])) {
+				t.Errorf("want EncodeV2(%d, %d, %d)[0]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.want[0], bits.S(got[0]))
 			}
-			if !bytes.Equal(got[1], secplus.B(tt.want[1])) {
-				t.Errorf("want EncodeV2(%d, %d, %d)[1]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.want[1], secplus.S(got[1]))
+			if !bytes.Equal(got[1], bits.B(tt.want[1])) {
+				t.Errorf("want EncodeV2(%d, %d, %d)[1]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.want[1], bits.S(got[1]))
 			}
 
 			if tt.wantBursts != nil {
@@ -268,11 +269,11 @@ func TestEncodeV2(t *testing.T) {
 					t.Error(err)
 					return
 				}
-				if !bytes.Equal(got[0], secplus.B(tt.wantBursts[0])) {
-					t.Errorf("want EncodeV2ToBursts(%d, %d, %d)[0]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.wantBursts[0], secplus.S(got[0]))
+				if !bytes.Equal(got[0], bits.B(tt.wantBursts[0])) {
+					t.Errorf("want EncodeV2ToBursts(%d, %d, %d)[0]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.wantBursts[0], bits.S(got[0]))
 				}
-				if !bytes.Equal(got[1], secplus.B(tt.wantBursts[1])) {
-					t.Errorf("want EncodeV2ToBursts(%d, %d, %d)[1]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.wantBursts[1], secplus.S(got[1]))
+				if !bytes.Equal(got[1], bits.B(tt.wantBursts[1])) {
+					t.Errorf("want EncodeV2ToBursts(%d, %d, %d)[1]==%s; got %s", tt.fixedHigh, tt.fixedLow, tt.rolling, tt.wantBursts[1], bits.S(got[1]))
 				}
 			}
 		})
